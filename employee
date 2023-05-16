@@ -1,0 +1,164 @@
+#include <stdio.h>
+#include <string.h>
+
+struct Employee 
+{
+    char ID[10];
+    char name[50];
+    char title[50];
+    char salary[8];
+};
+void createRecord() 
+{
+    FILE *file = fopen("Employee.txt", "a");
+    struct Employee employee;
+
+    printf("Creating new record...\n");
+    printf("Enter Employee ID: ");
+    scanf("%s", employee.ID);
+    printf("Enter Name: ");
+    scanf(" %[^\n]%*c", employee.name);
+    printf("Enter Job Title: ");
+    scanf(" %[^\n]%*c", employee.title);
+    printf("Enter Salary Amount: ");
+    scanf("%s", employee.salary);
+
+    fprintf(file, "%s,%s,%s,%s\n", employee.ID, employee.name, employee.title, employee.salary);
+    printf("Record created successfully!\n");
+
+    fclose(file);
+}
+
+void deleteRecord() 
+{
+    char searchID[10];
+    printf("Enter the employee ID to delete: ");
+    scanf("%s", searchID);
+
+    FILE *file = fopen("Employee.txt", "r");
+    FILE *tempFile = fopen("temp.txt", "w");
+    int found = 0;
+    struct Employee employee;
+
+    while (fscanf(file, "%[^,],%[^,],%[^,],%[^\n]\n", employee.ID, employee.name, employee.title, employee.salary) == 4) {
+        if (strcmp(searchID, employee.ID) == 0) {
+            found = 1;
+        } else {
+            fprintf(tempFile, "%s,%s,%s,%s\n", employee.ID, employee.name, employee.title, employee.salary);
+        }
+    }
+
+    fclose(file);
+    fclose(tempFile);
+
+    if (found) {
+        remove("Employee.txt");
+        rename("temp.txt", "Employee.txt");
+        printf("Record deleted successfully!\n");
+    } else {
+        printf("Record not found for employee ID: %s\n", searchID);
+    }
+}
+
+void modifyRecord() 
+{
+    char searchID[10];
+    printf("Enter the employee ID to modify: ");
+    scanf("%s", searchID);
+
+    FILE *file = fopen("Employee.txt", "r");
+    FILE *tempFile = fopen("temp.txt", "w");
+    int found = 0;
+    struct Employee employee;
+
+    while (fscanf(file, "%[^,],%[^,],%[^,],%[^\n]\n", employee.ID, employee.name, employee.title, employee.salary) == 4) {
+        if (strcmp(searchID, employee.ID) == 0) {
+            found = 1;
+
+            printf("Enter new Name: ");
+            scanf(" %[^\n]%*c", employee.name);
+            printf("Enter new Job Title: ");
+            scanf(" %[^\n]%*c", employee.title);
+            printf("Enter new Salary Amount: ");
+            scanf("%s", employee.salary);
+        }
+
+        fprintf(tempFile, "%s,%s,%s,%s\n", employee.ID, employee.name, employee.title, employee.salary);
+    }
+
+    fclose(file);
+    fclose(tempFile);
+
+    if (found) {
+        remove("Employee.txt");
+        rename("temp.txt", "Employee.txt");
+        printf("Record modified successfully!\n");
+    } else {
+        printf("Record not found for employee ID: %s\n", searchID);
+    }
+}
+
+void viewRecord() 
+{
+    char searchID[10];
+    printf("Enter the employee ID to view: ");
+    scanf("%s", searchID);
+    struct Employee employee;
+    int found=0;
+    FILE *file = fopen("Employee.txt", "r");
+    while (fscanf(file, "%[^,],%[^,],%[^,],%[^\n]\n", employee.ID, employee.name, employee.title, employee.salary) == 4) {
+    if (strcmp(searchID, employee.ID) == 0) 
+    {
+        found = 1;
+        printf("Required Employee Details:\n");
+        printf("Employee ID: %s\n", employee.ID);
+        printf("Name: %s\n", employee.name);
+        printf("Job Title: %s\n", employee.title);
+        printf("Salary: %s\n", employee.salary);
+        break;
+    }
+}
+
+fclose(file);
+
+if (!found) 
+    printf("Record not found for employee ID: %s\n", searchID);
+}
+
+int main() 
+{
+printf("MENU:\n");
+printf("1. Create Record\n");
+printf("2. Delete Record\n");
+printf("3. Modify Record\n");
+printf("4. View Record\n");
+printf("5. Exit\n");
+int choice;
+do {
+    printf("\nEnter choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            createRecord();
+            break;
+        case 2:
+            deleteRecord();
+            break;
+        case 3:
+            modifyRecord();
+            break;
+        case 4:
+            viewRecord();
+            break;
+        case 5:
+            printf("Exiting the system...\n");
+            break;
+        default:
+            printf("Invalid choice! Please try again.\n");
+            break;
+    }
+} while (choice != 5);
+
+return 0;
+}
